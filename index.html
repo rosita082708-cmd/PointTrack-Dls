@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PointTrack :DLS - วิทยาการคำนวณ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Kanit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #fdf2f8 100%);
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Animated Coin Pulsing */
+        @keyframes pulse-coin {
+            0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.6)); }
+            50% { transform: scale(1.15) rotate(12deg); filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.9)); }
+        }
+        .animate-coin {
+            animation: pulse-coin 2.5s infinite ease-in-out;
+        }
+
+        /* Power-up Flame Effect */
+        @keyframes fire-glow {
+            0% { box-shadow: 0 0 15px #f97316, 0 0 30px #ef4444; transform: scale(1); }
+            50% { box-shadow: 0 0 35px #facc15, 0 0 60px #f97316; transform: scale(1.05); }
+            100% { box-shadow: 0 0 15px #f97316, 0 0 30px #ef4444; transform: scale(1); }
+        }
+        .powerup-active {
+            animation: fire-glow 1.2s infinite alternate ease-in-out !important;
+            border-color: #f97316 !important;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showScreen('screenLanding')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-500 flex items-center justify-center text-white shadow-md">
+                    <i class="fa-solid fa-laptop-code text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">PointTrack :DLS</h1>
+                    <p class="text-xs text-gray-500 font-medium">วิชาวิทยาการคำนวณ • ครูอารียา กรมเมือง</p>
+                </div>
+            </div>
+
+            <div id="headerActions">
+                <button onclick="showScreen('screenLanding')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition flex items-center">
+                    <i class="fa-solid fa-house mr-2"></i> หน้าหลัก
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- SCREEN 1: LANDING PAGE -->
+        <section id="screenLanding" class="space-y-8 animate-fade-in">
+            <!-- Hero Header -->
+            <div class="text-center space-y-3 py-6">
+                <span class="px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold tracking-wide uppercase shadow-sm">
+                    ภาคเรียนที่ 1 ปีการศึกษา 2569
+                </span>
+                <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+                    PointTrack :DLS
+                </h2>
+                <div class="space-y-1">
+                    <p class="text-lg font-medium text-purple-600">วิชาวิทยาการคำนวณ</p>
+                    <p class="text-sm text-gray-500">ติดตามผลคะแนน เหรียญโบนัส</p>
+                </div>
+            </div>
+
+            <!-- Main Selection Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <!-- Teacher Button Card -->
+                <div onclick="openTeacherAuthModal()" class="glass-card rounded-3xl p-8 text-center hover:shadow-2xl transition duration-300 transform hover:-translate-y-2 cursor-pointer border-2 border-pink-300 bg-gradient-to-b from-white to-pink-50/50 group">
+                    <div class="w-24 h-24 mx-auto rounded-3xl bg-pink-100 text-pink-500 flex items-center justify-center text-5xl mb-6 group-hover:scale-110 group-hover:bg-pink-500 group-hover:text-white transition duration-300 shadow-md">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">คุณครูอารียา</h3>
+                    <button class="w-full py-3.5 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-2xl transition shadow-lg shadow-pink-200 flex items-center justify-center">
+                        <i class="fa-solid fa-key mr-2"></i> เข้าสู่ระบบครู
+                    </button>
+                </div>
+
+                <!-- Student Button Card -->
+                <div onclick="showScreen('screenStudentPortal')" class="glass-card rounded-3xl p-8 text-center hover:shadow-2xl transition duration-300 transform hover:-translate-y-2 cursor-pointer border-2 border-sky-300 bg-gradient-to-b from-white to-sky-50/50 group">
+                    <div class="w-24 h-24 mx-auto rounded-3xl bg-sky-100 text-sky-500 flex items-center justify-center text-5xl mb-6 group-hover:scale-110 group-hover:bg-sky-500 group-hover:text-white transition duration-300 shadow-md">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">นักเรียน ม.5 & ม.6</h3>
+                    <button class="w-full py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-2xl transition shadow-lg shadow-sky-200 flex items-center justify-center">
+                        <i class="fa-solid fa-right-to-bracket mr-2"></i> เข้าสู่ระบบนักเรียน
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SCREEN 2: TEACHER DASHBOARD (Pink Theme) -->
+        <section id="screenTeacher" class="hidden space-y-6">
+            <!-- Top Action Header -->
+            <div class="bg-gradient-to-r from-pink-500 to-rose-400 rounded-3xl p-6 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold">ระบบจัดการครู</span>
+                        <span class="text-xs text-pink-100">ครูอารียา กรมเมือง</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold mt-1">จัดการคะแนนและข้อมูลนักเรียน</h2>
+                </div>
+                <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                    <button onclick="openImportModal()" class="flex-1 md:flex-none px-4 py-2.5 bg-white text-pink-600 hover:bg-pink-50 text-sm font-semibold rounded-xl shadow transition flex items-center justify-center">
+                        <i class="fa-solid fa-file-import mr-2"></i> นำเข้าไฟล์/ข้อความ
+                    </button>
+                    <button onclick="openAddStudentModal()" class="flex-1 md:flex-none px-4 py-2.5 bg-pink-700 hover:bg-pink-800 text-white text-sm font-semibold rounded-xl shadow transition flex items-center justify-center">
+                        <i class="fa-solid fa-user-plus mr-2"></i> เพิ่มนักเรียน
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="glass-card rounded-2xl p-4 sm:p-6 shadow-sm border border-pink-100 space-y-4">
+                <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+                    <div class="flex flex-wrap gap-2">
+                        <div class="inline-flex rounded-xl bg-pink-50 p-1 border border-pink-200">
+                            <button id="btnTeacherM5" onclick="setTeacherGrade('ม.5')" class="px-4 py-2 text-sm font-semibold rounded-lg bg-pink-500 text-white shadow">ชั้น ม.5</button>
+                            <button id="btnTeacherM6" onclick="setTeacherGrade('ม.6')" class="px-4 py-2 text-sm font-semibold rounded-lg text-pink-700 hover:bg-pink-100">ชั้น ม.6</button>
+                        </div>
+                        <select id="selectTeacherRoom" onchange="renderTeacherTable()" class="px-4 py-2 bg-white border border-pink-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-pink-400 outline-none">
+                            <option value="ม.5/1">ห้อง ม.5/1</option>
+                            <option value="ม.5/2">ห้อง ม.5/2</option>
+                            <option value="ม.5/3">ห้อง ม.5/3</option>
+                            <option value="ม.5/4">ห้อง ม.5/4</option>
+                        </select>
+                    </div>
+
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-pink-400"></i>
+                        <input type="text" id="teacherSearchInput" onkeyup="renderTeacherTable()" placeholder="ค้นหาชื่อ หรือ รหัส..." class="w-full pl-9 pr-4 py-2 bg-white border border-pink-200 rounded-xl text-sm focus:ring-2 focus:ring-pink-400 outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Table -->
+            <div class="glass-card rounded-2xl border border-pink-100 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-pink-100/70 text-pink-900 border-b border-pink-200">
+                            <tr>
+                                <th class="p-3.5 font-semibold text-center">เลขที่</th>
+                                <th class="p-3.5 font-semibold">รหัสนักเรียน</th>
+                                <th class="p-3.5 font-semibold">ชื่อ-นามสกุล</th>
+                                <th class="p-3.5 font-semibold text-center">คะแนนหลัก (เต็ม 45)</th>
+                                <th class="p-3.5 font-semibold text-center">คะแนนโบนัส (เหรียญ)</th>
+                                <th class="p-3.5 font-semibold text-center">กลางภาค</th>
+                                <th class="p-3.5 font-semibold text-center">ปลายภาค</th>
+                                <th class="p-3.5 font-semibold text-center">รวมคะแนน</th>
+                                <th class="p-3.5 font-semibold text-center">สถานะคะแนน</th>
+                                <th class="p-3.5 font-semibold text-center">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherTableBody" class="divide-y divide-pink-100 bg-white/50">
+                            <!-- Rows injected dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SCREEN 3: STUDENT PORTAL LOGIN -->
+        <section id="screenStudentPortal" class="hidden space-y-6 max-w-xl mx-auto py-4">
+            <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl border border-sky-100 text-center space-y-6">
+                <div class="w-16 h-16 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center text-3xl mx-auto shadow-inner">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">เข้าสู่ระบบนักเรียน</h2>
+                    <p class="text-xs text-gray-500 mt-1">เลือกระดับชั้น ห้องเรียน และเลขอัตลักษณ์นักเรียน</p>
+                </div>
+
+                <!-- Level Select Tabs -->
+                <div class="grid grid-cols-2 gap-3 p-1.5 bg-gray-100/80 rounded-2xl border border-gray-200">
+                    <button id="tabStudentM5" onclick="setStudentLoginGrade('ม.5')" class="py-2.5 rounded-xl font-semibold text-sm transition bg-amber-400 text-amber-950 shadow-md">
+                        <i class="fa-solid fa-star mr-1 text-amber-800"></i> มัธยมศึกษาปีที่ 5
+                    </button>
+                    <button id="tabStudentM6" onclick="setStudentLoginGrade('ม.6')" class="py-2.5 rounded-xl font-semibold text-sm transition text-emerald-800 hover:bg-emerald-100">
+                        <i class="fa-solid fa-leaf mr-1 text-emerald-600"></i> มัธยมศึกษาปีที่ 6
+                    </button>
+                </div>
+
+                <form onsubmit="handleStudentLogin(event)" class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">เลือกห้องเรียน</label>
+                        <select id="studentLoginRoom" class="w-full p-3 bg-white border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-sky-400 outline-none">
+                            <option value="ม.5/1">ห้อง ม.5/1</option>
+                            <option value="ม.5/2">ห้อง ม.5/2</option>
+                            <option value="ม.5/3">ห้อง ม.5/3</option>
+                            <option value="ม.5/4">ห้อง ม.5/4</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">กรอกรหัสนักเรียน</label>
+                        <input type="text" id="studentLoginId" required placeholder="เช่น 50101" class="w-full p-3 bg-white border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-400 outline-none">
+                    </div>
+
+                    <div id="studentLoginError" class="hidden text-xs text-rose-500 font-semibold bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+                        <i class="fa-solid fa-circle-exclamation mr-1"></i> ไม่พบรหัสนักเรียนนี้ในห้องที่เลือก
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-xl shadow-lg shadow-sky-200 transition">
+                        เข้าสู่ระบบดูคะแนน
+                    </button>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- SCREEN 4: STUDENT DASHBOARD -->
+        <section id="screenStudentDashboard" class="hidden space-y-6">
+            <!-- Student Header Profile Banner -->
+            <div id="studentHeaderBanner" class="rounded-3xl p-6 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 transition-all duration-300">
+                <div class="flex items-center space-x-4 w-full sm:w-auto">
+                    <div id="studentAvatarDisplay" class="relative w-20 h-20 rounded-2xl bg-white/20 border-2 border-white/50 flex items-center justify-center text-4xl shadow-inner cursor-pointer hover:scale-105 transition" onclick="openAvatarModal()" title="คลิกเพื่อแต่งตัวละคร">
+                        <span id="avatarIcon">👦</span>
+                        <div class="absolute -bottom-1 -right-1 bg-yellow-400 text-gray-900 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow">
+                            <i class="fa-solid fa-shirt"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span id="badgeStudentRoom" class="bg-white/20 px-3 py-0.5 rounded-full text-xs font-semibold">ห้อง ม.5/1</span>
+                            <span id="badgeStudentId" class="text-xs opacity-90">รหัส: 50101</span>
+                        </div>
+                        <h2 id="txtStudentName" class="text-2xl font-bold mt-0.5">นายสมชาย สายเรียน</h2>
+                        <p class="text-xs opacity-80 mt-1">คลิกที่ตัวละครเพื่อเปลี่ยนชุดหรืออัปสเกลพลัง</p>
+                    </div>
+                </div>
+
+                <!-- Power Up Action Button -->
+                <div class="flex items-center space-x-2 w-full sm:w-auto">
+                    <button onclick="triggerPowerUp()" class="w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold rounded-2xl shadow-lg transition transform active:scale-95 flex items-center justify-center">
+                        <i class="fa-solid fa-fire mr-2 animate-bounce"></i> 🔥 Power Up!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Student Work Completion Status Card -->
+            <div id="studentWorkStatusCard" class="rounded-2xl p-4 border flex items-center justify-between shadow-sm transition-all duration-300">
+                <div class="flex items-center space-x-3">
+                    <div id="studentWorkStatusIcon" class="text-3xl">
+                        <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">สถานะการส่งงานของคุณครู</span>
+                        <h4 id="studentWorkStatusTitle" class="text-lg font-bold text-gray-800">งานครบสมบูรณ์</h4>
+                    </div>
+                </div>
+                <div id="studentWorkStatusBadge" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center space-x-1">
+                    <i class="fa-solid fa-check"></i> <span>เรียบร้อย</span>
+                </div>
+            </div>
+
+            <!-- Feedback Alert Banner -->
+            <div id="studentFeedbackBanner" class="rounded-2xl p-4 border flex items-center space-x-3 shadow-sm transition-all duration-300">
+                <div id="studentFeedbackIcon" class="text-2xl">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">ข้อความประเมินจากระบบ</h4>
+                    <p id="studentFeedbackText" class="text-base font-bold text-gray-800">กำลังประมวลผล...</p>
+                </div>
+            </div>
+
+            <!-- 4 Score Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- 1. Main Score Card -->
+                <div class="glass-card rounded-2xl p-5 border border-sky-100 hover:shadow-md transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wide text-sky-600 bg-sky-50 px-2.5 py-1 rounded-lg">ช่องที่ 1</span>
+                        <i class="fa-solid fa-book-open text-sky-400 text-lg"></i>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-600">คะแนนหลัก</h3>
+                    <p class="text-xs text-gray-400 mb-3">ใบงานและกิจกรรม (เต็ม 45)</p>
+                    <div class="flex items-baseline space-x-1">
+                        <span id="valMainScore" class="text-3xl font-extrabold text-gray-800">0</span>
+                        <span class="text-gray-400 text-sm font-medium">/ 45</span>
+                    </div>
+                </div>
+
+                <!-- 2. Bonus Score Card -->
+                <div class="glass-card rounded-2xl p-5 border border-amber-200 bg-gradient-to-br from-white to-amber-50/40 hover:shadow-md transition relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wide text-amber-600 bg-amber-100 px-2.5 py-1 rounded-lg">ช่องที่ 2</span>
+                        <i class="fa-solid fa-coins text-amber-500 text-2xl animate-coin"></i>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-600">คะแนนโบนัส</h3>
+                    <p class="text-xs text-amber-600/80 mb-3">สะสมเหรียญพิเศษ</p>
+                    <div class="flex items-baseline space-x-1">
+                        <span id="valBonusScore" class="text-3xl font-extrabold text-amber-600">0</span>
+                        <span class="text-amber-500 text-xs font-bold ml-1">เหรียญ</span>
+                    </div>
+                </div>
+
+                <!-- 3. Midterm Score Card -->
+                <div class="glass-card rounded-2xl p-5 border border-indigo-100 hover:shadow-md transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wide text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">ช่องที่ 3</span>
+                        <i class="fa-solid fa-file-signature text-indigo-400 text-lg"></i>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-600">คะแนนสอบกลางภาค</h3>
+                    <p class="text-xs text-gray-400 mb-3">สอบวัดผลกลางภาค</p>
+                    <div class="flex items-baseline space-x-1">
+                        <span id="valMidScore" class="text-3xl font-extrabold text-gray-800">0</span>
+                    </div>
+                </div>
+
+                <!-- 4. Final Score Card -->
+                <div class="glass-card rounded-2xl p-5 border border-purple-100 hover:shadow-md transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wide text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">ช่องที่ 4</span>
+                        <i class="fa-solid fa-graduation-cap text-purple-400 text-lg"></i>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-600">คะแนนสอบปลายภาค</h3>
+                    <p class="text-xs text-gray-400 mb-3">สอบวัดผลประเมินปลายภาค</p>
+                    <div class="flex items-baseline space-x-1">
+                        <span id="valFinalScore" class="text-3xl font-extrabold text-gray-800">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer Banner -->
+            <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-xs sm:text-sm flex items-start space-x-3 shadow-sm">
+                <i class="fa-solid fa-triangle-exclamation text-amber-500 text-lg flex-shrink-0 mt-0.5"></i>
+                <p>
+                    <strong>หมายเหตุแจ้งเตือน:</strong> คะแนนที่ปรากฏเป็นเพียงส่วนหนึ่งในการเก็บรายวิชาวิทยาการคำนวณ คะแนนที่นอกเหนือจากนี้ เช่น คะแนนอัตลักษณ์ คะแนนชาฟาวี ยังไม่ถูกนับรวม
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: TEACHER AUTHENTICATION -->
+    <div id="modalTeacherAuth" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-pink-100 space-y-5">
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 bg-pink-100 text-pink-500 rounded-2xl flex items-center justify-center text-2xl mx-auto">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">ยืนยันตัวตนสำหรับคุณครู</h3>
+                <p class="text-xs text-gray-500">กรุณากรอกรหัสผ่านเพื่อเข้าสู่ระบบจัดการคะแนน</p>
+            </div>
+
+            <form onsubmit="handleTeacherLogin(event)" class="space-y-4">
+                <div>
+                    <input type="password" id="inputTeacherPassword" required placeholder="กรอกรหัสผ่านครู..." class="w-full p-3.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-pink-400 outline-none text-center font-bold tracking-widest">
+                </div>
+                <div id="teacherAuthError" class="hidden text-xs text-rose-500 font-semibold text-center bg-rose-50 p-2 rounded-lg">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+                </div>
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeTeacherAuthModal()" class="w-1/2 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-sm transition">
+                        ยกเลิก
+                    </button>
+                    <button type="submit" class="w-1/2 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-xl text-sm transition shadow-md shadow-pink-200">
+                        ยืนยันเข้าใช้
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL 2: IMPORT DATA -->
+    <div id="modalImport" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-pink-100 space-y-5">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-file-import text-pink-500 mr-2"></i>นำเข้าข้อมูลนักเรียน</h3>
+                <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">เลือกไฟล์จากเครื่อง (.txt / .csv / .tsv)</label>
+                <input type="file" id="importFileInput" accept=".txt,.csv,.tsv" onchange="handleFileUpload(event)" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100 cursor-pointer border rounded-xl p-1">
+            </div>
+
+            <div class="relative flex py-1 items-center">
+                <div class="flex-grow border-t border-gray-200"></div>
+                <span class="flex-shrink mx-3 text-xs text-gray-400 font-medium">หรือ คัดลอกข้อความวางที่นี่</span>
+                <div class="flex-grow border-t border-gray-200"></div>
+            </div>
+
+            <div>
+                <textarea id="importTextArea" rows="5" placeholder="รูปแบบ: เลขที่ [tab/ space / comma] รหัสนักเรียน [tab/ space / comma] ชื่อ-นามสกุล&#10;เช่น:&#10;1  50101  นายกิตติศักดิ์ ใจดี&#10;2  50102  นางสาวมณีรัตน์ สุขใจ" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-pink-400 outline-none"></textarea>
+            </div>
+
+            <div class="flex space-x-3">
+                <button onclick="closeImportModal()" class="w-1/2 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-sm transition">ยกเลิก</button>
+                <button onclick="processImportData()" class="w-1/2 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-xl text-sm transition shadow-md shadow-pink-200">บันทึกนำเข้าข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL 3: EDIT / ADD STUDENT -->
+    <div id="modalEditStudent" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-pink-100 space-y-4">
+            <h3 id="txtEditModalTitle" class="text-lg font-bold text-gray-800 border-b pb-2">แก้ไขข้อมูลนักเรียน</h3>
+            
+            <form onsubmit="saveStudentScore(event)" class="space-y-3">
+                <input type="hidden" id="editStudentId">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">เลขที่</label>
+                        <input type="number" id="editNo" required class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">รหัสนักเรียน</label>
+                        <input type="text" id="editCode" required class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">ชื่อ-นามสกุล</label>
+                    <input type="text" id="editName" required class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">คะแนนหลัก (เต็ม 45)</label>
+                        <input type="number" id="editMainScore" min="0" max="45" step="0.5" required class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">คะแนนโบนัส (ไม่จำกัด)</label>
+                        <input type="number" id="editBonusScore" min="0" step="0.5" required class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">กลางภาค</label>
+                        <input type="number" id="editMidScore" min="0" max="100" step="0.5" required class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">ปลายภาค</label>
+                        <input type="number" id="editFinalScore" min="0" max="100" step="0.5" required class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm">
+                    </div>
+                </div>
+
+                <div class="p-3 bg-pink-50/60 rounded-xl border border-pink-200 flex items-center justify-between">
+                    <span class="text-xs font-semibold text-pink-900">สถานะคะแนนสมบูรณ์</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="editStatusCheckbox" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                </div>
+
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeEditModal()" class="w-1/2 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-sm">ยกเลิก</button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-xl text-sm shadow">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL 4: DELETE CONFIRMATION -->
+    <div id="modalDeleteConfirm" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-rose-100 text-center space-y-4">
+            <div class="w-14 h-14 bg-rose-100 text-rose-500 rounded-2xl flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-gray-800">ยืนยันการลบนักเรียน</h3>
+                <p id="deleteConfirmName" class="text-xs text-gray-500 mt-1">คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนักเรียนคนนี้?</p>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="closeDeleteModal()" class="w-1/2 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-sm">ยกเลิก</button>
+                <button id="btnConfirmDelete" class="w-1/2 py-2.5 bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-xl text-sm shadow">ลบข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL 5: AVATAR DRESS UP & POWER-UP MODAL -->
+    <div id="modalAvatar" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center space-y-5 border border-amber-200 relative overflow-hidden">
+            <button onclick="closeAvatarModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+
+            <h3 class="text-xl font-bold text-gray-800"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-2"></i>ปรับแต่งตัวละคร & พลัง</h3>
+
+            <div id="avatarPreviewContainer" class="w-32 h-32 mx-auto rounded-3xl bg-gradient-to-b from-sky-100 to-indigo-100 border-4 border-amber-300 flex items-center justify-center text-6xl shadow-inner relative transition-transform duration-300">
+                <span id="avatarPreviewIcon">👦</span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-2">เลือกตัวละครที่คุณชอบ</label>
+                <div class="grid grid-cols-4 gap-2">
+                    <button onclick="changeAvatarIcon('👦')" class="p-3 bg-gray-50 hover:bg-amber-100 rounded-xl text-2xl border transition">👦</button>
+                    <button onclick="changeAvatarIcon('👧')" class="p-3 bg-gray-50 hover:bg-amber-100 rounded-xl text-2xl border transition">👧</button>
+                    <button onclick="changeAvatarIcon('🧑‍🎓')" class="p-3 bg-gray-50 hover:bg-amber-100 rounded-xl text-2xl border transition">🧑‍🎓</button>
+                    <button onclick="changeAvatarIcon('🦸')" class="p-3 bg-gray-50 hover:bg-amber-100 rounded-xl text-2xl border transition">🦸</button>
+                    <button onclick="changeAvatarIcon('🤖')" class="p-3 bg-gray-50 hover:bg-amber-100 rounded-xl text-2xl border transition">🤖</button>
+                    <button onclick="changeAvatarIcon('🧙')" class="p-3 bg-gray-50 hover:bg-amber-100 rounded-xl text-2xl border transition">🧙</button>
+                    <button onclick="changeAvatarIcon('🐱')" class="p-3 bg-gray-50 hover:bg-amber-100 rounded-xl text-2xl border transition">🐱</button>
+                    <button onclick="changeAvatarIcon('🦊')" class="p-3 bg-gray-50 hover:bg-amber-100 rounded-xl text-2xl border transition">🦊</button>
+                </div>
+            </div>
+
+            <div id="powerUpDisplaySection" class="hidden p-4 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 rounded-2xl text-white shadow-lg space-y-1">
+                <span class="text-xs font-bold uppercase tracking-wider">พลังรวมสายคอมพิวเตอร์</span>
+                <div id="txtPowerUpScore" class="text-4xl font-extrabold tracking-tight">0</div>
+                <p class="text-xs opacity-90">🔥 สกิลอัปเกรดเรียบร้อย!</p>
+            </div>
+
+            <button onclick="closeAvatarModal()" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md transition">
+                ตกลงบันทึก
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Global Application State
+        let currentTeacherGrade = 'ม.5';
+        let currentStudentGrade = 'ม.5';
+        let currentActiveStudent = null;
+        let deleteCandidateId = null;
+
+        // Mock Dataset for Classes & Rooms
+        const studentData = {
+            'ม.5/1': [
+                { id: '50101', no: 1, name: 'นายสมชาย สายเรียน', mainScore: 40, bonusScore: 5, midScore: 18, finalScore: 22, isComplete: true, avatar: '👦' },
+                { id: '50102', no: 2, name: 'นางสาววิภาดา ขยันยิ่ง', mainScore: 35, bonusScore: 3, midScore: 15, finalScore: 18, isComplete: false, avatar: '👧' },
+                { id: '50103', no: 3, name: 'นายกิตติพงษ์ ตั้งใจดี', mainScore: 42, bonusScore: 8, midScore: 19, finalScore: 25, isComplete: true, avatar: '🧑‍🎓' }
+            ],
+            'ม.5/2': [
+                { id: '50201', no: 1, name: 'นายอนันต์ เด่นดี', mainScore: 30, bonusScore: 2, midScore: 12, finalScore: 15, isComplete: false, avatar: '👦' }
+            ],
+            'ม.5/3': [],
+            'ม.5/4': [],
+            'ม.6/1': [
+                { id: '60101', no: 1, name: 'นายณัฐพล ชัยชนะ', mainScore: 44, bonusScore: 10, midScore: 20, finalScore: 24, isComplete: true, avatar: '🦸' }
+            ],
+            'ม.6/2': [],
+            'ม.6/3': [],
+            'ม.6/4': []
+        };
+
+        function showScreen(screenId) {
+            const screens = ['screenLanding', 'screenTeacher', 'screenStudentPortal', 'screenStudentDashboard'];
+            screens.forEach(s => {
+                const el = document.getElementById(s);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(screenId);
+            if (target) target.classList.remove('hidden');
+        }
+
+        function openTeacherAuthModal() {
+            document.getElementById('inputTeacherPassword').value = '';
+            document.getElementById('teacherAuthError').classList.add('hidden');
+            document.getElementById('modalTeacherAuth').classList.remove('hidden');
+        }
+
+        function closeTeacherAuthModal() {
+            document.getElementById('modalTeacherAuth').classList.add('hidden');
+        }
+
+        function handleTeacherLogin(e) {
+            e.preventDefault();
+            const pwd = document.getElementById('inputTeacherPassword').value.trim();
+            if (pwd === 'Sheta160246') {
+                closeTeacherAuthModal();
+                setTeacherGrade('ม.5');
+                showScreen('screenTeacher');
+            } else {
+                document.getElementById('teacherAuthError').classList.remove('hidden');
+            }
+        }
+
+        function setTeacherGrade(grade) {
+            currentTeacherGrade = grade;
+            const btnM5 = document.getElementById('btnTeacherM5');
+            const btnM6 = document.getElementById('btnTeacherM6');
+            const selectRoom = document.getElementById('selectTeacherRoom');
+
+            if (grade === 'ม.5') {
+                btnM5.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-pink-500 text-white shadow";
+                btnM6.className = "px-4 py-2 text-sm font-semibold rounded-lg text-pink-700 hover:bg-pink-100";
+                selectRoom.innerHTML = `
+                    <option value="ม.5/1">ห้อง ม.5/1</option>
+                    <option value="ม.5/2">ห้อง ม.5/2</option>
+                    <option value="ม.5/3">ห้อง ม.5/3</option>
+                    <option value="ม.5/4">ห้อง ม.5/4</option>
+                `;
+            } else {
+                btnM6.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-pink-500 text-white shadow";
+                btnM5.className = "px-4 py-2 text-sm font-semibold rounded-lg text-pink-700 hover:bg-pink-100";
+                selectRoom.innerHTML = `
+                    <option value="ม.6/1">ห้อง ม.6/1</option>
+                    <option value="ม.6/2">ห้อง ม.6/2</option>
+                    <option value="ม.6/3">ห้อง ม.6/3</option>
+                    <option value="ม.6/4">ห้อง ม.6/4</option>
+                `;
+            }
+            renderTeacherTable();
+        }
+
+        function renderTeacherTable() {
+            const roomSelect = document.getElementById('selectTeacherRoom');
+            if (!roomSelect) return;
+            const room = roomSelect.value;
+            const search = document.getElementById('teacherSearchInput').value.trim().toLowerCase();
+            const tbody = document.getElementById('teacherTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const list = studentData[room] || [];
+            const filtered = list.filter(s => s.name.toLowerCase().includes(search) || s.id.includes(search));
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="text-center py-8 text-gray-400">
+                            <i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>
+                            ไม่พบข้อมูลนักเรียนในห้องนี้
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach(student => {
+                const total = (parseFloat(student.mainScore)||0) + (parseFloat(student.bonusScore)||0) + (parseFloat(student.midScore)||0) + (parseFloat(student.finalScore)||0);
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-pink-50/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3.5 text-center font-medium">${student.no}</td>
+                    <td class="p-3.5 font-mono text-gray-600">${student.id}</td>
+                    <td class="p-3.5 font-semibold text-gray-800">${student.avatar} ${student.name}</td>
+                    <td class="p-3.5 text-center font-bold text-sky-600">${student.mainScore}</td>
+                    <td class="p-3.5 text-center font-bold">
+                        <span class="inline-flex items-center gap-1 font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
+                            <i class="fa-solid fa-coins text-amber-500"></i> +${student.bonusScore}
+                        </span>
+                    </td>
+                    <td class="p-3.5 text-center text-gray-700">${student.midScore}</td>
+                    <td class="p-3.5 text-center text-gray-700">${student.finalScore}</td>
+                    <td class="p-3.5 text-center font-extrabold text-pink-600 text-base">${total}</td>
+                    <td class="p-3.5 text-center">
+                        <button onclick="toggleStudentStatus('${room}', '${student.id}', ${!student.isComplete})" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition border shadow-sm ${student.isComplete ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100' : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'}" title="คลิกเพื่อเปลี่ยนสถานะ">
+                            <i class="fa-solid ${student.isComplete ? 'fa-circle-check text-emerald-500 text-base' : 'fa-circle-xmark text-rose-500 text-base'}"></i>
+                            <span>${student.isComplete ? 'ครบ' : 'ยังไม่ครบ'}</span>
+                        </button>
+                    </td>
+                    <td class="p-3.5 text-center space-x-1">
+                        <button onclick="openEditStudentModal('${room}', '${student.id}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="แก้ไข">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="confirmDeleteStudent('${room}', '${student.id}', '${student.name}')" class="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="ลบ">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleStudentStatus(room, id, checked) {
+            const list = studentData[room] || [];
+            const st = list.find(s => s.id === id);
+            if (st) {
+                st.isComplete = checked;
+                renderTeacherTable();
+            }
+        }
+
+        function openAddStudentModal() {
+            const room = document.getElementById('selectTeacherRoom').value;
+            document.getElementById('txtEditModalTitle').innerText = "เพิ่มนักเรียนใหม่ (" + room + ")";
+            document.getElementById('editStudentId').value = "";
+            document.getElementById('editNo').value = (studentData[room] ? studentData[room].length + 1 : 1);
+            document.getElementById('editCode').value = "";
+            document.getElementById('editName').value = "";
+            document.getElementById('editMainScore').value = 0;
+            document.getElementById('editBonusScore').value = 0;
+            document.getElementById('editMidScore').value = 0;
+            document.getElementById('editFinalScore').value = 0;
+            document.getElementById('editStatusCheckbox').checked = false;
+            document.getElementById('modalEditStudent').classList.remove('hidden');
+        }
+
+        function openEditStudentModal(room, id) {
+            const list = studentData[room] || [];
+            const st = list.find(s => s.id === id);
+            if (!st) return;
+
+            document.getElementById('txtEditModalTitle').innerText = "แก้ไขข้อมูลนักเรียน";
+            document.getElementById('editStudentId').value = id;
+            document.getElementById('editNo').value = st.no;
+            document.getElementById('editCode').value = st.id;
+            document.getElementById('editName').value = st.name;
+            document.getElementById('editMainScore').value = st.mainScore;
+            document.getElementById('editBonusScore').value = st.bonusScore;
+            document.getElementById('editMidScore').value = st.midScore;
+            document.getElementById('editFinalScore').value = st.finalScore;
+            document.getElementById('editStatusCheckbox').checked = st.isComplete;
+            document.getElementById('modalEditStudent').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('modalEditStudent').classList.add('hidden');
+        }
+
+        function saveStudentScore(e) {
+            e.preventDefault();
+            const room = document.getElementById('selectTeacherRoom').value;
+            const targetId = document.getElementById('editStudentId').value;
+            const newNo = parseInt(document.getElementById('editNo').value);
+            const newCode = document.getElementById('editCode').value.trim();
+            const newName = document.getElementById('editName').value.trim();
+            const mainScore = parseFloat(document.getElementById('editMainScore').value)||0;
+            const bonusScore = parseFloat(document.getElementById('editBonusScore').value)||0;
+            const midScore = parseFloat(document.getElementById('editMidScore').value)||0;
+            const finalScore = parseFloat(document.getElementById('editFinalScore').value)||0;
+            const isComplete = document.getElementById('editStatusCheckbox').checked;
+
+            if (!studentData[room]) studentData[room] = [];
+
+            if (targetId === "") {
+                studentData[room].push({
+                    id: newCode,
+                    no: newNo,
+                    name: newName,
+                    mainScore: mainScore,
+                    bonusScore: bonusScore,
+                    midScore: midScore,
+                    finalScore: finalScore,
+                    isComplete: isComplete,
+                    avatar: "👦"
+                });
+            } else {
+                const st = studentData[room].find(s => s.id === targetId);
+                if (st) {
+                    st.no = newNo;
+                    st.id = newCode;
+                    st.name = newName;
+                    st.mainScore = mainScore;
+                    st.bonusScore = bonusScore;
+                    st.midScore = midScore;
+                    st.finalScore = finalScore;
+                    st.isComplete = isComplete;
+                }
+            }
+
+            closeEditModal();
+            renderTeacherTable();
+        }
+
+        function confirmDeleteStudent(room, id, name) {
+            deleteCandidateId = { room, id };
+            document.getElementById('deleteConfirmName').innerText = `นักเรียน: ${name} (รหัส ${id})`;
+            document.getElementById('modalDeleteConfirm').classList.remove('hidden');
+            document.getElementById('btnConfirmDelete').onclick = executeDeleteStudent;
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('modalDeleteConfirm').classList.add('hidden');
+        }
+
+        function executeDeleteStudent() {
+            if (!deleteCandidateId) return;
+            const { room, id } = deleteCandidateId;
+            if (studentData[room]) {
+                studentData[room] = studentData[room].filter(s => s.id !== id);
+            }
+            closeDeleteModal();
+            renderTeacherTable();
+        }
+
+        function openImportModal() {
+            document.getElementById('importTextArea').value = '';
+            document.getElementById('modalImport').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('modalImport').classList.add('hidden');
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('importTextArea').value = e.target.result;
+            };
+            reader.readAsText(file);
+        }
+
+        function processImportData() {
+            const text = document.getElementById('importTextArea').value.trim();
+            if (!text) return;
+
+            const room = document.getElementById('selectTeacherRoom').value;
+            if (!studentData[room]) studentData[room] = [];
+
+            const lines = text.split('\n');
+            lines.forEach(line => {
+                const parts = line.trim().split(/[\t,;]+/);
+                if (parts.length >= 2) {
+                    let no = parseInt(parts[0]) || (studentData[room].length + 1);
+                    let id = parts[1] || parts[0];
+                    let name = parts.slice(2).join(' ') || parts[1];
+
+                    studentData[room].push({
+                        id: id,
+                        no: no,
+                        name: name,
+                        mainScore: 0,
+                        bonusScore: 0,
+                        midScore: 0,
+                        finalScore: 0,
+                        isComplete: false,
+                        avatar: "👦"
+                    });
+                }
+            });
+
+            closeImportModal();
+            renderTeacherTable();
+        }
+
+        function setStudentLoginGrade(grade) {
+            currentStudentGrade = grade;
+            const tabM5 = document.getElementById('tabStudentM5');
+            const tabM6 = document.getElementById('tabStudentM6');
+            const selectRoom = document.getElementById('studentLoginRoom');
+
+            if (grade === 'ม.5') {
+                tabM5.className = "py-2.5 rounded-xl font-semibold text-sm transition bg-amber-400 text-amber-950 shadow-md";
+                tabM6.className = "py-2.5 rounded-xl font-semibold text-sm transition text-emerald-800 hover:bg-emerald-100";
+                selectRoom.innerHTML = `
+                    <option value="ม.5/1">ห้อง ม.5/1</option>
+                    <option value="ม.5/2">ห้อง ม.5/2</option>
+                    <option value="ม.5/3">ห้อง ม.5/3</option>
+                    <option value="ม.5/4">ห้อง ม.5/4</option>
+                `;
+            } else {
+                tabM6.className = "py-2.5 rounded-xl font-semibold text-sm transition bg-emerald-600 text-white shadow-md";
+                tabM5.className = "py-2.5 rounded-xl font-semibold text-sm transition text-amber-800 hover:bg-amber-100";
+                selectRoom.innerHTML = `
+                    <option value="ม.6/1">ห้อง ม.6/1</option>
+                    <option value="ม.6/2">ห้อง ม.6/2</option>
+                    <option value="ม.6/3">ห้อง ม.6/3</option>
+                    <option value="ม.6/4">ห้อง ม.6/4</option>
+                `;
+            }
+        }
+
+        function handleStudentLogin(e) {
+            e.preventDefault();
+            const room = document.getElementById('studentLoginRoom').value;
+            const id = document.getElementById('studentLoginId').value.trim();
+            const errBox = document.getElementById('studentLoginError');
+
+            const list = studentData[room] || [];
+            const st = list.find(s => s.id === id);
+
+            if (st) {
+                errBox.classList.add('hidden');
+                currentActiveStudent = { ...st, room };
+                renderStudentDashboard();
+                showScreen('screenStudentDashboard');
+            } else {
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        function renderStudentDashboard() {
+            if (!currentActiveStudent) return;
+            const st = currentActiveStudent;
+
+            const banner = document.getElementById('studentHeaderBanner');
+            if (st.room.startsWith('ม.5')) {
+                banner.className = "rounded-3xl p-6 text-amber-950 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 border border-amber-300";
+            } else {
+                banner.className = "rounded-3xl p-6 text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-emerald-500 via-teal-600 to-green-600 border border-emerald-400";
+            }
+
+            document.getElementById('badgeStudentRoom').innerText = "ห้อง " + st.room;
+            document.getElementById('badgeStudentId').innerText = "รหัส: " + st.id;
+            document.getElementById('txtStudentName').innerText = st.name;
+            document.getElementById('avatarIcon').innerText = st.avatar || "👦";
+
+            document.getElementById('valMainScore').innerText = st.mainScore;
+            document.getElementById('valBonusScore').innerText = st.bonusScore;
+            document.getElementById('valMidScore').innerText = st.midScore;
+            document.getElementById('valFinalScore').innerText = st.finalScore;
+
+            const workCard = document.getElementById('studentWorkStatusCard');
+            const workIcon = document.getElementById('studentWorkStatusIcon');
+            const workTitle = document.getElementById('studentWorkStatusTitle');
+            const workBadge = document.getElementById('studentWorkStatusBadge');
+
+            if (st.isComplete) {
+                workCard.className = "rounded-2xl p-4 border flex items-center justify-between shadow-sm transition-all duration-300 bg-emerald-50 border-emerald-200 text-emerald-900";
+                workIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
+                workTitle.innerText = "งานครบสมบูรณ์";
+                workBadge.className = "px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center space-x-1";
+                workBadge.innerHTML = `<i class="fa-solid fa-check"></i> <span>ครบถ้วน</span>`;
+            } else {
+                workCard.className = "rounded-2xl p-4 border flex items-center justify-between shadow-sm transition-all duration-300 bg-rose-50 border-rose-200 text-rose-900";
+                workIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-500"></i>`;
+                workTitle.innerText = "ยังส่งงานไม่ครบ";
+                workBadge.className = "px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 flex items-center space-x-1";
+                workBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>ยังไม่ครบ</span>`;
+            }
+
+            const fbBanner = document.getElementById('studentFeedbackBanner');
+            const fbText = document.getElementById('studentFeedbackText');
+            const fbIcon = document.getElementById('studentFeedbackIcon');
+
+            if (st.isComplete || (st.mainScore >= 40 && st.midScore > 0 && st.finalScore > 0)) {
+                fbBanner.className = "rounded-2xl p-4 border flex items-center space-x-3 shadow-sm bg-emerald-50 border-emerald-200 text-emerald-800";
+                fbIcon.className = "text-2xl text-emerald-500";
+                fbIcon.innerHTML = `<i class="fa-solid fa-award"></i>`;
+                fbText.innerText = "ความตั้งใจดีเยี่ยม...ถึงเส้นชัยแล้ว";
+            } else if (st.mainScore > 0 || st.bonusScore > 0) {
+                fbBanner.className = "rounded-2xl p-4 border flex items-center space-x-3 shadow-sm bg-amber-50 border-amber-200 text-amber-800";
+                fbIcon.className = "text-2xl text-amber-500";
+                fbIcon.innerHTML = `<i class="fa-solid fa-hourglass-half"></i>`;
+                fbText.innerText = "เหลืออีกนิด...จะเข้าเส้นชัย";
+            } else {
+                fbBanner.className = "rounded-2xl p-4 border flex items-center space-x-3 shadow-sm bg-rose-50 border-rose-200 text-rose-800";
+                fbIcon.className = "text-2xl text-rose-500";
+                fbIcon.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
+                fbText.innerText = "รีบติดต่อครูด่วนๆๆๆ";
+            }
+        }
+
+        function openAvatarModal() {
+            if (!currentActiveStudent) return;
+            document.getElementById('avatarPreviewIcon').innerText = currentActiveStudent.avatar || '👦';
+            document.getElementById('powerUpDisplaySection').classList.add('hidden');
+            document.getElementById('modalAvatar').classList.remove('hidden');
+        }
+
+        function closeAvatarModal() {
+            document.getElementById('modalAvatar').classList.add('hidden');
+        }
+
+        function changeAvatarIcon(icon) {
+            if (!currentActiveStudent) return;
+            currentActiveStudent.avatar = icon;
+            document.getElementById('avatarPreviewIcon').innerText = icon;
+            document.getElementById('avatarIcon').innerText = icon;
+
+            const list = studentData[currentActiveStudent.room] || [];
+            const st = list.find(s => s.id === currentActiveStudent.id);
+            if (st) st.avatar = icon;
+        }
+
+        function playPowerUpSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.4);
+                
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } catch(e) {
+                console.log("Audio play error", e);
+            }
+        }
+
+        function triggerPowerUp() {
+            if (!currentActiveStudent) return;
+            playPowerUpSound();
+
+            const st = currentActiveStudent;
+            const total = (parseFloat(st.mainScore)||0) + (parseFloat(st.bonusScore)||0) + (parseFloat(st.midScore)||0) + (parseFloat(st.finalScore)||0);
+
+            openAvatarModal();
+            const pSec = document.getElementById('powerUpDisplaySection');
+            document.getElementById('txtPowerUpScore').innerText = total + " คะแนน";
+            pSec.classList.remove('hidden');
+
+            const container = document.getElementById('avatarPreviewContainer');
+            container.classList.add('powerup-active');
+            setTimeout(() => {
+                container.classList.remove('powerup-active');
+            }, 3000);
+        }
+
+        window.onload = function() {
+            showScreen('screenLanding');
+        };
+    </script>
+</body>
+</html>
